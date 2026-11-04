@@ -1,0 +1,539 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Claude + fm Benchmark</title>
+<!-- Built with Whiteprint 1.1.0 (css 7fa4b8ee3d, js 0bb664e1bb) by build.py. Edit the source and rebuild, or run build.py on this file to upgrade. -->
+<style data-whiteprint="1.1.0">
+/* Whiteprint 1.1.0
+   Green ink, ruled sheets, hatched charts, red pencil. Docs: DESIGN.md.
+   Every colour lives in the three token blocks below. No rule after them uses a literal colour.
+
+   Classes
+   Page      .sheet .head (.site) .title .lede .block .rev .stats .stat .cells .cell .c3-.c9 .h .meta .b
+   Text      .note .para .cap .tag (.ink .on) .stamp
+   Content   .tiles .tile .steps .step .k .choices .opt (.on) .panel (.frame) .cols .kv .run .callout (.plain)
+   Data      .tw table(.num) .hbars .hbar (.on) .legend .sw .sw-* .chart
+   Controls  .btn (.on .warn) .btns .seg .form .field .check .out
+   Moving    .nav .grp .gh .rows .links details(.sm) .fig pre
+   Columns   .n2-.n6 on .stats .tiles .steps
+   SVG       fills .f-* strokes .k-* text .t-* marks .pt .hit .halo pattern parts .p-*   */
+
+:root {
+  color-scheme: light;
+  /* Colour tokens, light values. Dark values repeat twice below; keep the two dark blocks identical. */
+  --bg: #FBFEFC;       /* paper: page and sheet background */
+  --fg: #0A7A3F;       /* ink: all text under 24px */
+  --fg2: #2B7350;      /* secondary ink: captions, labels, axis text */
+  --vivid: #00A94F;    /* large headings and values, frames, fills, hatches, dots. Never small text */
+  --on-vivid: #03291A; /* text on vivid fills */
+  --rule: #A3DDB9;     /* hairlines inside cells, tile and table dividers */
+  --grid: #E0F6E8;     /* 20px background grid behind the sheet */
+  --gridline: #D5F2E0; /* chart grid lines */
+  --pencil: #C4201B;      /* red pencil: warnings, limits, status, focus */
+  --on-pencil: #FBFEFC;   /* text on solid red */
+  --tip-bg: #0A7A3F;   /* chart tooltip background */
+  --tip-fg: #FFFFFF;   /* chart tooltip text */
+
+  /* Type */
+  --font-cond: "DIN Condensed", "Arial Narrow", Impact, sans-serif;
+  --font-din: "DIN Alternate", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-mono: Menlo, ui-monospace, monospace;
+
+  /* Space and rules */
+  --page-y: 24px;
+  --cell-x: 24px;
+  --cell-top: 16px;
+  --cell-bot: 22px;
+  --gap: 10px;
+  --frame: 2.5px;
+  --divide: 1.5px;
+  --hair: 1px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0A1A12;
+    --fg: #2EE082;
+    --fg2: #A6DEBF;
+    --vivid: #2EE082;
+    --on-vivid: #0A1A12;
+    --rule: #26573D;
+    --grid: #11261A;
+    --gridline: #1C3A29;
+    --pencil: #FF8A7A;
+    --on-pencil: #0A1A12;
+    --tip-bg: #2EE082;
+    --tip-fg: #0A1A12;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0A1A12;
+  --fg: #2EE082;
+  --fg2: #A6DEBF;
+  --vivid: #2EE082;
+  --on-vivid: #0A1A12;
+  --rule: #26573D;
+  --grid: #11261A;
+  --gridline: #1C3A29;
+  --pencil: #FF8A7A;
+  --on-pencil: #0A1A12;
+  --tip-bg: #2EE082;
+  --tip-fg: #0A1A12;
+}
+body { background: var(--bg); color: var(--fg); }
+/* end of tokens */
+
+/* ---------- Base ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  font: 400 15px/1.5 var(--font-body);
+  background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 20px 20px;
+  padding-block: var(--page-y);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+@media (min-width: 641px) {
+  body {
+    padding-left: max(24px, env(safe-area-inset-left, 0px));
+    padding-right: max(24px, env(safe-area-inset-right, 0px));
+  }
+}
+@media (max-width: 640px) { :root { --page-y: 16px; } }
+h1, h2, h3, h4, p, figure, dl, dd { margin: 0; }
+a { color: inherit; }
+strong { font-weight: 700; }
+img { max-width: 100%; height: auto; }
+hr { border: 0; border-top: var(--hair) solid var(--rule); margin: 12px 0; }
+:focus-visible { outline: 2px solid var(--pencil); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+}
+
+/* ---------- Headings ---------- */
+h1 {
+  font: 400 clamp(58px, 9vw, 112px)/.9 var(--font-cond);
+  text-transform: uppercase; letter-spacing: .005em; color: var(--vivid); overflow-wrap: anywhere;
+}
+h2 {
+  font: 400 clamp(25px, 2.4vw, 29px)/1.05 var(--font-cond);
+  text-transform: uppercase; letter-spacing: .01em; color: var(--vivid); text-wrap: balance; overflow-wrap: anywhere;
+}
+h3 { font: 400 20px/1.15 var(--font-cond); text-transform: uppercase; letter-spacing: .01em; color: var(--fg); }
+h4 { font: 400 16px/1.25 var(--font-din); color: var(--fg); }
+
+/* ---------- Sheet and masthead ---------- */
+.sheet { max-width: 1180px; margin-inline: auto; background: var(--bg); border: var(--frame) solid var(--vivid); min-width: 0; }
+.head { --block-w: 300px; display: grid; grid-template-columns: minmax(0, 1fr) var(--block-w); border-bottom: var(--frame) solid var(--vivid); }
+.title { padding: 22px var(--cell-x) 18px; display: flex; flex-direction: column; justify-content: flex-end; min-width: 0; }
+.lede { font-size: clamp(17px, 1.6vw, 19px); line-height: 1.35; padding-top: 8px; max-width: 52ch; }
+.head.solo { grid-template-columns: minmax(0, 1fr); }
+.title > .meta { margin-bottom: 12px; }
+.head.site { --block-w: 280px; }
+.head.site .title { padding-bottom: 12px; }
+.head.site h1 { font-size: clamp(72px, 12.5vw, 148px); }
+.head.site .title p { font-size: 16px; padding-top: 2px; }
+
+.block { display: grid; font-size: 14px; line-height: 1.3; border-left: var(--divide) solid var(--vivid); }
+.block > div { padding: 7px 12px 8px; border-bottom: var(--hair) solid var(--rule); min-width: 0; }
+.block > div:last-child { border-bottom: 0; }
+.block small { display: block; font-size: 11.5px; color: var(--fg2); padding-bottom: 1px; }
+.block strong { font: 400 16px/1.2 var(--font-din); }
+.block .rev { color: var(--pencil); }
+
+/* ---------- Key figures ---------- */
+.n2 { --n: 2; } .n3 { --n: 3; } .n4 { --n: 4; } .n5 { --n: 5; } .n6 { --n: 6; }
+.stats { display: grid; grid-template-columns: repeat(var(--n, 4), minmax(0, 1fr)); gap: var(--hair); background: var(--rule); border-bottom: var(--frame) solid var(--vivid); }
+.stat { padding: 12px 18px 14px; background: var(--bg); min-width: 0; }
+.stat:first-child { padding-left: var(--cell-x); }
+.stat b { display: block; font: 400 clamp(38px, 4.8vw, 58px)/1 var(--font-din); letter-spacing: -.015em; color: var(--vivid); overflow-wrap: anywhere; }
+.stat span { display: block; font-size: 13.5px; line-height: 1.3; color: var(--fg2); }
+
+/* ---------- 12-column cells ---------- */
+.cells { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--divide); background: var(--vivid); }
+.cell { grid-column: span 12; background: var(--bg); padding: var(--cell-top) var(--cell-x) var(--cell-bot); min-width: 0; display: flex; flex-direction: column; gap: var(--gap); }
+.c3 { grid-column: span 3; } .c4 { grid-column: span 4; } .c5 { grid-column: span 5; } .c6 { grid-column: span 6; }
+.c7 { grid-column: span 7; } .c8 { grid-column: span 8; } .c9 { grid-column: span 9; }
+.b { min-width: 0; }
+.b > * + * { margin-top: 10px; }
+.b ul, .callout ul { margin: 0; padding-left: 20px; font-size: 14.5px; }
+.b ul li + li, .callout ul li + li { margin-top: 4px; }
+.h { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 12px; justify-content: space-between; }
+
+/* ---------- Small text ---------- */
+.meta { font-size: 13px; color: var(--fg2); }
+.note, .para, .cap { font-size: 14.5px; max-width: 72ch; }
+.note { color: var(--fg2); }
+.cap { font-weight: 600; padding-bottom: 8px; }
+.para { padding-top: 12px; }
+code { font: 500 .9em/1 var(--font-mono); overflow-wrap: anywhere; }
+
+/* ---------- Badges and stamps ---------- */
+.tag { display: inline-block; font-size: 13px; color: var(--pencil); font-weight: 500; border: 1.2px solid var(--pencil); padding: 0 6px; }
+.tag.ink { color: var(--fg); border-color: var(--vivid); }
+.tag.on { color: var(--on-vivid); background: var(--vivid); border-color: var(--vivid); }
+.stamp { display: inline-block; font: 400 19px/1 var(--font-cond); text-transform: uppercase; letter-spacing: .04em; color: var(--pencil); border: 2px solid var(--pencil); padding: 5px 9px 3px; }
+
+/* ---------- Joined tiles and steps ---------- */
+.tiles, .steps { display: grid; grid-template-columns: repeat(var(--n, 4), minmax(0, 1fr)); gap: var(--hair); background: var(--rule); border: var(--hair) solid var(--rule); }
+.steps:not(.n2):not(.n3):not(.n4):not(.n5):not(.n6) { --n: 3; }
+.tile, .step { padding: 8px 12px 10px; background: var(--bg); min-width: 0; }
+.tile b { display: block; font: 400 26px/1.1 var(--font-din); color: var(--vivid); overflow-wrap: anywhere; }
+.tile span { display: block; font-size: 13.5px; line-height: 1.25; color: var(--fg2); }
+.step { display: flex; flex-direction: column; gap: 2px; }
+.step .k { font-size: 13px; color: var(--fg2); }
+.step b { font: 400 16.5px/1.25 var(--font-din); }
+
+/* ---------- Callouts ---------- */
+.callout { margin: 12px 0 0; padding: 10px 14px 10px 44px; border: var(--divide) solid var(--pencil); color: var(--pencil); font-size: 15.5px; position: relative; }
+.callout::before { content: "!"; position: absolute; left: 12px; top: 10px; width: 22px; height: 20px; background: var(--pencil); color: var(--on-pencil); font: 400 14px/22px var(--font-din); text-align: center; clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+.callout.plain { padding-left: 14px; border-color: var(--vivid); color: var(--fg); }
+.callout.plain::before { content: none; }
+
+/* ---------- Chosen and rejected options ---------- */
+.choices { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr)); gap: var(--gap); }
+.opt { border: var(--hair) solid var(--rule); padding: 10px 12px 12px; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.opt b { font: 400 clamp(44px, 5vw, 60px)/1 var(--font-din); color: var(--vivid); overflow-wrap: anywhere; }
+.opt span { font-size: 13.5px; line-height: 1.3; }
+.opt .k { font-weight: 600; }
+.opt.on { background: var(--vivid); border-color: var(--vivid); color: var(--on-vivid); }
+.opt.on b { color: var(--on-vivid); }
+
+/* ---------- Panels ---------- */
+.panel { border: var(--hair) solid var(--rule); padding: 10px 12px 12px; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.panel.frame { border: var(--divide) solid var(--vivid); }
+.cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); gap: var(--gap); }
+
+/* ---------- Key and value list ---------- */
+.kv { display: grid; grid-template-columns: minmax(0, max-content) minmax(0, 1fr); gap: 0 16px; font-size: 14.5px; }
+.kv dt { color: var(--fg2); padding: 5px 0; border-bottom: var(--hair) solid var(--rule); }
+.kv dd { padding: 5px 0; border-bottom: var(--hair) solid var(--rule); min-width: 0; }
+.kv dt:last-of-type, .kv dd:last-of-type { border-bottom: 0; }
+
+/* ---------- Numbered runbook steps ---------- */
+.run { list-style: none; margin: 0; padding: 0; counter-reset: run; font-size: 14.5px; }
+.run > li { counter-increment: run; display: grid; grid-template-columns: 34px minmax(0, 1fr); padding: 7px 0; border-bottom: var(--hair) solid var(--rule); }
+.run > li:last-child { border-bottom: 0; }
+.run > li::before { content: counter(run); font: 400 26px/1 var(--font-din); color: var(--vivid); }
+
+/* ---------- Tables ---------- */
+.tw { overflow-x: auto; }
+.tw + .para + .tw { margin-top: 14px; }
+table { width: 100%; border-collapse: collapse; font-size: 14.5px; font-variant-numeric: tabular-nums; text-align: left; }
+th { font: 400 14px/1.2 var(--font-din); padding: 6px 14px 6px 0; border-bottom: var(--divide) solid var(--vivid); }
+td { padding: 6px 14px 6px 0; border-bottom: var(--hair) solid var(--rule); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+td:first-child { min-width: 10ch; }
+td:last-child, th:last-child { padding-right: 0; }
+th[scope="row"] { font: 400 14.5px/1.5 var(--font-body); width: 34%; padding-top: 6px; border-bottom: var(--hair) solid var(--rule); }
+tr:last-child th[scope="row"] { border-bottom: 0; }
+table.num { white-space: nowrap; }
+table.num th:not(:first-child), table.num td:not(:first-child) { text-align: right; }
+
+/* ---------- CSS bars ---------- */
+.hbars { padding-bottom: 8px; }
+.hbar { display: grid; grid-template-columns: minmax(96px, 140px) minmax(0, 1fr); gap: 12px; align-items: center; padding: 3px 0; font-size: 14px; }
+.hbar > div { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.hbar i { display: block; height: 22px; width: calc((100% - 56px) * var(--v, 1)); border: var(--hair) solid var(--vivid); background: repeating-linear-gradient(135deg, var(--vivid) 0 2px, var(--bg) 2px 6px); }
+.hbar.on i { background: var(--vivid); }
+.hbar b { font: 400 19px/1 var(--font-din); }
+
+/* ---------- Legends ---------- */
+.legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 13.5px; padding-top: 8px; }
+.legend > span { display: inline-flex; align-items: center; gap: 7px; }
+.sw { display: inline-block; width: 22px; height: 13px; flex: none; border: var(--hair) solid var(--vivid); }
+.sw-solid { background: var(--vivid); }
+.sw-diag { background: repeating-linear-gradient(135deg, var(--vivid) 0 2px, var(--bg) 2px 5px); }
+.sw-lite { background: repeating-linear-gradient(135deg, var(--vivid) 0 1px, var(--bg) 1px 6px); }
+.sw-dots { background: radial-gradient(circle, var(--vivid) 1.2px, transparent 1.4px) 0 0/5px 5px var(--bg); }
+.sw-empty { background: var(--bg); }
+.sw-pencil { background: var(--pencil); border-color: var(--pencil); }
+.sw-pdiag { background: repeating-linear-gradient(45deg, var(--pencil) 0 2px, var(--bg) 2px 5px); border-color: var(--pencil); }
+.sw-plite { background: repeating-linear-gradient(45deg, var(--pencil) 0 1px, var(--bg) 1px 6px); border-color: var(--pencil); }
+.sw-hollow { width: 13px; border-radius: 50%; background: var(--bg); }
+.sw-dot { width: 13px; border-radius: 50%; background: var(--vivid); }
+
+/* ---------- Charts and inline SVG. All colours resolve from tokens, so a theme change repaints with no redraw. ---------- */
+.chart { width: 100%; min-width: 0; overflow-x: auto; }
+.chart svg { display: block; }
+svg text { font-family: var(--font-body); }
+.f-solid { fill: var(--vivid); }
+.f-diag { fill: url(#wp-diag); }
+.f-lite { fill: url(#wp-lite); }
+.f-dots { fill: url(#wp-dots); }
+.f-empty { fill: var(--bg); }
+.f-pencil { fill: var(--pencil); }
+.f-pdiag { fill: url(#wp-pdiag); }
+.f-plite { fill: url(#wp-plite); }
+.f-none { fill: none; }
+.k-vivid { stroke: var(--vivid); }
+.k-ink { stroke: var(--fg); }
+.k-grid { stroke: var(--gridline); }
+.k-pencil { stroke: var(--pencil); }
+.k-limit { stroke: var(--pencil); stroke-width: 1.5; stroke-dasharray: 6 3; }
+.t-ink { fill: var(--fg); }
+.t-mut { fill: var(--fg2); }
+.t-pencil { fill: var(--pencil); }
+.t-on { fill: var(--on-vivid); }
+.halo { paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; font-weight: 600; }
+.tip-bg { fill: var(--tip-bg); }
+.tip-fg { fill: var(--tip-fg); }
+.p-bg { fill: var(--bg); }
+.p-ln { stroke: var(--vivid); }
+.p-dot { fill: var(--vivid); }
+.p-pn { stroke: var(--pencil); }
+.hit { fill: var(--bg); fill-opacity: 0; pointer-events: all; }
+.pt { cursor: default; }
+.pt:focus { outline: none; }
+.pt:focus-visible { outline: none; stroke: var(--pencil); stroke-width: 3px; }
+
+/* ---------- Buttons ---------- */
+.btn { display: inline-block; font: 400 15px/1.2 var(--font-din); color: var(--fg); background: var(--bg); border: var(--divide) solid var(--vivid); border-radius: 0; padding: 9px 14px; min-height: 40px; cursor: pointer; text-decoration: none; }
+.btn:hover, .btn.on, .btn[aria-pressed="true"], .btn[aria-current] { background: var(--vivid); color: var(--on-vivid); }
+.btn.warn { color: var(--pencil); border-color: var(--pencil); }
+.btn.warn:hover { background: var(--pencil); color: var(--on-pencil); }
+.btn:disabled, .btn[aria-disabled="true"] { color: var(--fg2); background: var(--bg); border: var(--divide) dashed var(--rule); cursor: not-allowed; }
+.btns { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.seg { display: inline-flex; flex-wrap: wrap; }
+.seg .btn { margin: 0 -1.5px -1.5px 0; }
+.seg .btn:focus-visible { position: relative; z-index: 1; }
+
+/* ---------- Form controls ---------- */
+.form { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr)); gap: 12px; align-items: start; }
+.field { display: grid; gap: 4px; min-width: 0; }
+.field > label, .field > .lab { font-size: 13.5px; color: var(--fg2); }
+.field small { font-size: 13px; color: var(--fg2); }
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, textarea {
+  width: 100%; min-width: 0; min-height: 40px; font: 400 15px/1.3 var(--font-body); color: var(--fg); background: var(--bg);
+  border: var(--divide) solid var(--vivid); border-radius: 0; padding: 8px 10px;
+}
+input::placeholder, textarea::placeholder { color: var(--fg2); opacity: 1; }
+input:disabled, select:disabled, textarea:disabled { color: var(--fg2); border: var(--divide) dashed var(--rule); }
+input[aria-invalid="true"], select[aria-invalid="true"], textarea[aria-invalid="true"] { border-color: var(--pencil); }
+input[type="checkbox"], input[type="radio"], input[type="range"] { accent-color: var(--vivid); }
+input[type="range"] { width: 100%; }
+.check { display: flex; gap: 8px; align-items: center; font-size: 14.5px; }
+.check input { width: 18px; height: 18px; margin: 0; flex: none; }
+.out { font: 400 26px/1.1 var(--font-din); color: var(--vivid); }
+.err { font-size: 13px; color: var(--pencil); }
+
+/* ---------- Code blocks ---------- */
+pre { margin: 0; padding: 10px 12px; border: var(--hair) solid var(--rule); overflow-x: auto; font: 500 13px/1.45 var(--font-mono); }
+pre code { font: inherit; overflow-wrap: normal; }
+kbd { font: 500 .9em/1 var(--font-mono); border: var(--hair) solid var(--vivid); padding: 1px 4px; }
+
+/* ---------- Navigation ---------- */
+.nav { display: flex; flex-wrap: wrap; gap: 1px; background: var(--rule); border-bottom: var(--divide) solid var(--vivid); }
+.nav a { flex: 1 1 auto; background: var(--bg); padding: 8px 14px; font: 400 15px/1.2 var(--font-din); text-decoration: none; text-align: center; }
+.nav a:hover, .nav a[aria-current] { background: var(--vivid); color: var(--on-vivid); }
+.nav a:focus-visible { outline-offset: -3px; }
+.nav a:hover:focus-visible, .nav a[aria-current]:focus-visible { outline-color: var(--on-vivid); }
+
+/* ---------- Disclosure ---------- */
+summary { cursor: pointer; font: 400 25px/1.1 var(--font-cond); text-transform: uppercase; letter-spacing: .01em; color: var(--vivid); }
+details .tw { margin-top: 10px; }
+details.sm summary { font: 400 16px/1.25 var(--font-din); text-transform: none; letter-spacing: 0; color: var(--fg); }
+details.sm > :not(summary) { margin-top: 6px; }
+
+/* ---------- Index, or drawing register ---------- */
+.grp { display: grid; grid-template-columns: 200px minmax(0, 1fr); border-bottom: var(--divide) solid var(--vivid); }
+.grp:last-child { border-bottom: 0; }
+.gh { padding: 12px 16px 14px var(--cell-x); border-right: var(--divide) solid var(--vivid); min-width: 0; }
+.gh h2 { font-size: 30px; line-height: 1; text-wrap: wrap; }
+.gh span { display: block; font-size: 13px; color: var(--fg2); }
+.rows, .links { list-style: none; margin: 0; padding: 0; }
+.rows li + li, .links li + li { border-top: var(--hair) solid var(--rule); }
+.rows a { display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: 2px 20px; padding: 9px var(--cell-x) 10px 18px; text-decoration: none; align-items: baseline; transition: background-color .1s, color .1s; }
+.rows b { font: 400 19px/1.25 var(--font-din); }
+.rows span { font-size: 14.5px; color: var(--fg2); line-height: 1.35; }
+.links a { display: block; padding: 6px 4px; text-decoration: none; font: 400 16px/1.25 var(--font-din); }
+.rows a:hover, .links a:hover { background: var(--vivid); color: var(--on-vivid); }
+.rows a:hover span, .rows a:hover b { color: var(--on-vivid); }
+.rows a:focus-visible, .links a:focus-visible { outline-offset: -3px; }
+.rows a:hover:focus-visible, .links a:hover:focus-visible { outline-color: var(--on-vivid); }
+
+/* ---------- Figures: illustrations, photos and floor plans keep their own colours ---------- */
+.fig { border: var(--hair) solid var(--rule); min-width: 0; }
+.fig > .art { overflow-x: auto; }
+.fig img, .fig > .art > svg { display: block; max-width: 100%; height: auto; }
+.fig figcaption { padding: 6px 12px; font-size: 13.5px; color: var(--fg2); border-top: var(--hair) solid var(--rule); }
+
+/* ---------- Narrow layouts ---------- */
+@media (max-width: 860px) {
+  :root { --cell-x: 14px; --cell-top: 14px; --cell-bot: 18px; }
+  .cells { grid-template-columns: minmax(0, 1fr); }
+  .cell, .c3, .c4, .c5, .c6, .c7, .c8, .c9 { grid-column: 1; }
+  .head { grid-template-columns: minmax(0, 1fr); }
+  .title { padding: 16px var(--cell-x) 14px; }
+  .head.site .title { padding: 18px var(--cell-x) 10px; }
+  .block { border-left: 0; border-top: var(--divide) solid var(--vivid); grid-template-columns: 1fr 1fr; }
+  .block > div:nth-child(odd):not(:last-child) { border-right: var(--hair) solid var(--rule); }
+  .block > div:nth-last-child(2):nth-child(odd) { border-bottom: 0; }
+  .block > div:last-child:nth-child(odd) { grid-column: 1 / -1; }
+  .stats, .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .stat, .stat:first-child { padding: 10px var(--cell-x) 12px; }
+  .stat:last-child:nth-child(odd), .tile:last-child:nth-child(odd) { grid-column: 1 / -1; }
+  .steps { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 760px) {
+  .grp { grid-template-columns: minmax(0, 1fr); }
+  .gh { padding: 10px var(--cell-x) 8px; border-right: 0; border-bottom: var(--hair) solid var(--vivid); display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+  .rows a { grid-template-columns: minmax(0, 1fr); padding: 9px var(--cell-x) 10px; }
+}
+@media (max-width: 640px) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, textarea { font-size: 16px; }
+  .btn { min-height: 44px; }
+}
+</style>
+<style>
+.title>.meta{margin-bottom:12px}
+td.r,th.r{text-align:right;white-space:nowrap}
+table{font-variant-numeric:tabular-nums}
+tr.top>td{border-top:2px solid var(--vivid)}
+.panel pre{overflow-x:auto}
+</style>
+</head>
+<body>
+<div class="sheet">
+<header class="head solo"><div class="title">
+<p class="meta">fm-bench · macOS 27.0.1 · run 20261011-221838</p>
+<h1>Claude + fm Benchmark</h1>
+<p class="lede">Can Apple's on-device model (<code>fm</code>) take work off Claude without losing accuracy?
+<strong>Yes for structured extraction, partly for classification, no for filtering text.</strong></p></div></header>
+
+<section class="stats n3" aria-label="Key figures">
+  <div class="stat"><span>Extract invoices</span><b>−91% cost</b><span>Accuracy <strong>99–100%</strong>, same as Claude alone. fm extracts, Python checks, Claude redoes only 4 of 40 emails.</span></div>
+  <div class="stat"><span>Classify tickets</span><b>−81% cost</b><span>Accuracy drops <strong>100% → 92.5%</strong>. fm is often wrong while saying "high confidence", so those errors never reach Claude.</span></div>
+  <div class="stat"><span>Filter logs</span><b>−52 pts</b><span>Accuracy falls to <strong>48%</strong> on the large log. fm rewrites WARN lines as ERROR and drops real errors.</span></div>
+</section>
+
+<main class="cells">
+
+<section class="cell">
+  <div class="h"><h2>Tandem compared with Claude alone</h2></div>
+  <p class="note">Cost and accuracy change when fm does the first pass and Claude handles only what fm could not settle. Claude alone scored 100% in every run.</p>
+  <div class="b">
+    <div class="tw" tabindex="0" role="region" aria-label="Tandem compared with Claude alone">
+      <table>
+        <thead>
+          <tr><th>Task</th><th>Size</th><th class="r">Claude tokens saved</th><th class="r">Cost saved</th><th class="r">Accuracy change</th><th class="r">Extra time</th><th>Sent to Claude</th></tr>
+        </thead>
+        <tbody id="compare"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="cell">
+  <div class="h"><h2>Why fm fails</h2></div>
+  <div class="b">
+    <div class="cols">
+      <div class="panel">
+        <h4>Confidently wrong</h4>
+        <p class="note">"How do I add a new user to our team workspace?" was labelled <em>feature_request, high confidence</em>. The answer is <em>account</em>. fm's own confidence is no basis for deciding what to send to Claude.</p>
+      </div>
+      <div class="panel">
+        <h4>Changes what it copies</h4>
+        <p class="note">Asked to copy ERROR lines, fm turned WARN retry lines into ERROR lines: <strong>24 of 62</strong> lines it returned (medium log) were altered.</p>
+        <pre tabindex="0" aria-label="Example of an altered line">WARN  retrying … code=E1042-retry
+→ ERROR  retrying … code=E1042-retry</pre>
+      </div>
+      <div class="panel">
+        <h4>Misses items</h4>
+        <p class="note">It dropped <strong>11 of 46</strong> real error lines in the medium log. Claude can't recover what it never sees, which is why tandem is no better than fm on logs.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cell">
+  <div class="h"><h2>How to pair Claude and fm</h2></div>
+  <div class="b">
+    <ul>
+      <li><strong>Do:</strong> fm extracts into a fixed schema (<code>--schema</code>), code checks each field against the source, and Claude redoes only the records that fail. This kept accuracy at 99–100% for a tenth of the cost.</li>
+      <li><strong>Only with a check:</strong> classification is cheap with fm, but decide what to send to Claude with something you can verify (rules, or two prompts that disagree), not with fm's confidence.</li>
+      <li><strong>Don't:</strong> use fm to filter or copy text. <code>grep</code> does the log task perfectly for free, in milliseconds.</li>
+      <li><strong>Expect it to be slower:</strong> the fm and tandem routes took 1.7–16× as long as Claude alone because its 4k-token context forces many small calls (64 for the large log).</li>
+    </ul>
+  </div>
+</section>
+
+<section class="cell">
+  <div class="h"><h2>All results</h2></div>
+  <p class="note">Mean of 3 runs per row. Costs are what <code>claude -p</code> reports at API prices; on a subscription they count against usage limits instead.</p>
+  <div class="b">
+    <div class="tw" tabindex="0" role="region" aria-label="All results">
+      <table>
+        <thead>
+          <tr><th>Task</th><th>Size</th><th>Route</th><th class="r">Accuracy</th><th class="r">Claude tokens</th><th class="r">Claude cost</th><th class="r">fm tokens</th><th class="r">fm calls</th><th class="r">Seconds</th></tr>
+        </thead>
+        <tbody id="cells-body"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="cell">
+  <div class="h"><h2>Method</h2></div>
+  <div class="b">
+    <p class="para"><strong>Models.</strong> Claude: claude-sonnet-5-5 via <code>claude -p</code> with a one-line system prompt and no tools. fm: Apple's on-device system model with greedy sampling.</p>
+    <p class="para"><strong>Data.</strong> Synthetic inputs generated from fixed seeds, so every answer is known exactly. Classify: 12, 40 and 120 support tickets. Extract: 4, 15 and 40 invoice emails with decoy amounts and dates. Logs: 150, 1,000 and 3,000 lines with 3, 5 and 7 error codes to count.</p>
+    <p class="para"><strong>Routes.</strong> <em>Claude</em> gets the whole input in one call. <em>fm</em> works in chunks that fit its context, and Python merges the results. <em>Tandem</em> runs fm first, then sends Claude only the tickets fm was unsure of, the emails that failed validation, or the log lines fm kept.</p>
+    <p class="para"><strong>Measurement.</strong> Claude tokens come from the CLI's usage report (input, cache and output), including about 370 tokens of fixed overhead per call. fm tokens come from <code>fm count-tokens</code>. Accuracy: share of tickets right; share of the 5 fields per email right; for logs, the average of codes found, counts exact and first timestamps exact.</p>
+    <p class="para"><strong>Limits.</strong> Every run gave the same result (fm is deterministic with greedy sampling, and Claude scored 100% each time), so the 3 repeats add no spread. The data is synthetic and cleaner than real mail or logs. Times are for this Mac.</p>
+  </div>
+</section>
+
+</main>
+</div>
+<script>
+const DATA = {"cells": [{"task": "classify", "size": "small", "route": "claude", "reps": 3, "score": 1.0, "score_sd": 0.0, "claude_tokens": 957, "claude_in": 853, "claude_out": 104, "claude_cost_usd": 0.00113, "fm_tokens": 0, "fm_calls": 0, "seconds": 2.833333333333333, "escalated": [], "errors": 0, "model": "claude-sonnet-5-5"}, {"task": "classify", "size": "small", "route": "fm", "reps": 3, "score": 0.8333333333333334, "score_sd": 0.0, "claude_tokens": 0, "claude_in": 0, "claude_out": 0, "claude_cost_usd": 0, "fm_tokens": 509, "fm_calls": 1, "seconds": 5.233333333333333, "escalated": [], "errors": 0, "model": ""}, {"task": "classify", "size": "small", "route": "tandem", "reps": 3, "score": 0.8333333333333334, "score_sd": 0.0, "claude_tokens": 0, "claude_in": 0, "claude_out": 0, "claude_cost_usd": 0, "fm_tokens": 509, "fm_calls": 1, "seconds": 5.233333333333333, "escalated": ["0/12", "0/12", "0/12"], "errors": 0, "model": ""}, {"task": "classify", "size": "medium", "route": "claude", "reps": 3, "score": 1.0, "score_sd": 0.0, "claude_tokens": 1714, "claude_in": 1442, "claude_out": 272, "claude_cost_usd": 0.00474, "fm_tokens": 0, "fm_calls": 0, "seconds": 3.9666666666666663, "escalated": [], "errors": 0, "model": "claude-sonnet-5-5"}, {"task": "classify", "size": "medium", "route": "fm", "reps": 3, "score": 0.75, "score_sd": 0.0, "claude_tokens": 0, "claude_in": 0, "claude_out": 0, "claude_cost_usd": 0, "fm_tokens": 1539, "fm_calls": 2, "seconds": 13.733333333333334, "escalated": [], "errors": 0, "model": ""}, {"task": "classify", "size": "medium", "route": "tandem", "reps": 3, "score": 0.925, "score_sd": 0.0, "claude_tokens": 980, "claude_in": 890, "claude_out": 90, "claude_cost_usd": 0.002146666666666667, "fm_tokens": 1539, "fm_calls": 2, "seconds": 16.7, "escalated": ["12/40", "12/40", "12/40"], "errors": 0, "model": "claude-sonnet-5-5"}, {"task": "classify", "size": "large", "route": "claude", "reps": 3, "score": 1.0, "score_sd": 0.0, "claude_tokens": 5097.333333333333, "claude_in": 2982, "claude_out": 2115.3333333333335, "claude_cost_usd": 0.025326666666666667, "fm_tokens": 0, "fm_calls": 0, "seconds": 11.566666666666666, "escalated": [], "errors": 0, "model": "claude-sonnet-5-5"}, {"task": "classify", "size": "large", "route": "fm", "reps": 3, "score": 0.625, "score_sd": 0.0, "claude_tokens": 0, "claude_in": 0, "claude_out": 0, "claude_cost_usd": 0, "fm_tokens": 4096, "fm_calls": 4, "seconds": 35.03333333333333, "escalated": [], "errors": 0, "model": ""}, {"task": "classify", "size": "large", "route": "tandem", "reps": 3, "score": 0.925, "score_sd": 0.0, "claude_tokens": 1636, "claude_in": 1335, "claude_out": 301, "claude_cost_usd": 0.004883333333333333, "fm_tokens": 4096, "fm_calls": 4, "seconds": 38.86666666666667, "escalated": ["36/120", "36/120", "36/120"], "errors": 0, "model": "claude-sonnet-5-5"}, {"task": "extract", "size": "small", "route": "claude", "reps": 3, "score": 1.0, "score_sd": 0.0, "claude_tokens": 1491, "claude_in": 1193, "claude_out": 298, "claude_cost_usd": 0.0031, "fm_tokens": 0, "fm_calls": 0, "seconds": 4.066666666666666, "escalated": [], "errors": 0, "model": "claude-sonnet-5-5"}, {"task": "extract", "size": "small", "route": "fm", "reps": 3, "score": 1.0, "score_sd": 0.0, "claude_tokens": 0, "claude_in": 0, "claude_out": 0, "claude_cost_usd": 0, "fm_tokens": 810, "fm_calls": 4, "seconds": 6.733333333333333, "escalated": [], "errors": 0, "model": ""}, {"task": "extract", "size": "small", "route": "tandem", "reps": 3, "score": 1.0, "score_sd": 0.0, "claude_tokens": 0, "claude_in": 0, "claude_out": 0, "claude_cost_usd": 0, "fm_tokens": 810, "fm_calls": 4, "seconds": 6.733333333333333, "escalated": ["0/4", "0/4", "0/4"], "errors": 0, "model": ""}, {"task": "extract", "size": "medium", "route": "claude", "reps": 3, "score": 1.0, "score_sd": 0.0, "claude_tokens": 4206, "claude_in": 2543, "claude_out": 1663, "claude_cost_usd": 0.020193333333333334, "fm_tokens": 0, "fm_calls": 0, "seconds": 9.566666666666666, "escalated": [], "errors": 0, "model": "claude-sonnet-5-5"}, {"task": "extract", "size": "medium", "route": "fm", "reps": 3, "score": 0.9333333333333333, "score_sd": 0.0, "claude_tokens": 0, "claude_in": 0, "claude_out": 0, "claude_cost_usd": 0, "fm_tokens": 3025, "fm_calls": 15, "seconds": 27.733333333333334, "escalated": [], "errors": 3, "model": ""}, {"task": "extract", "size": "medium", "route": "tandem", "reps": 3, "score": 1.0, "score_sd": 0.0, "claude_tokens": 936, "claude_in": 857, "claude_out": 79, "claude_cost_usd": 0.00199, "fm_tokens": 3025, "fm_calls": 15, "seconds": 30.7, "escalated": ["1/15", "1/15", "1/15"], "errors": 3, "model": "claude-sonnet-5-5"}, {"task": "extract", "size": "large", "route": "claude", "reps": 3, "score": 1.0, "score_sd": 0.0, "claude_tokens": 10035.333333333334, "claude_in": 5634, "claude_out": 4401.333333333333, "claude_cost_usd": 0.051903333333333336, "fm_tokens": 0, "fm_calls": 0, "seconds": 21.466666666666665, "escalated": [], "errors": 0, "model": "claude-sonnet-5-5"}, {"task": "extract", "size": "large", "route": "fm", "reps": 3, "score": 0.895, "score_sd": 0.0, "claude_tokens": 0, "claude_in": 0, "claude_out": 0, "claude_cost_usd": 0, "fm_tokens": 7998, "fm_calls": 40, "seconds": 70.83333333333333, "escalated": [], "errors": 12, "model": ""}, {"task": "extract", "size": "large", "route": "tandem", "reps": 3, "score": 0.995, "score_sd": 0.0, "claude_tokens": 1546, "claude_in": 1235, "claude_out": 311, "claude_cost_usd": 0.004843333333333333, "fm_tokens": 7998, "fm_calls": 40, "seconds": 74.9, "escalated": ["4/40", "4/40", "4/40"], "errors": 12, "model": "claude-sonnet-5-5"}, {"task": "logs", "size": "small", "route": "claude", "reps": 3, "score": 1.0, "score_sd": 0.0, "claude_tokens": 6245.666666666667, "claude_in": 6003, "claude_out": 242.66666666666666, "claude_cost_usd": 0.0030266666666666667, "fm_tokens": 0, "fm_calls": 0, "seconds": 3.8333333333333335, "escalated": [], "errors": 0, "model": "claude-sonnet-5-5"}, {"task": "logs", "size": "small", "route": "fm", "reps": 3, "score": 0.7777777777777778, "score_sd": 0.0, "claude_tokens": 0, "claude_in": 0, "claude_out": 0, "claude_cost_usd": 0, "fm_tokens": 6347, "fm_calls": 4, "seconds": 15.333333333333334, "escalated": [], "errors": 0, "model": ""}, {"task": "logs", "size": "small", "route": "tandem", "reps": 3, "score": 0.7777777777777778, "score_sd": 0.0, "claude_tokens": 1348.6666666666667, "claude_in": 1120, "claude_out": 228.66666666666666, "claude_cost_usd": 0.0024066666666666668, "fm_tokens": 6347, "fm_calls": 4, "seconds": 19.1, "escalated": ["11 of 150 lines", "11 of 150 lines", "11 of 150 lines"], "errors": 0, "model": "claude-sonnet-5-5"}, {"task": "logs", "size": "medium", "route": "claude", "reps": 3, "score": 1.0, "score_sd": 0.0, "claude_tokens": 36192.666666666664, "claude_in": 35332, "claude_out": 860.6666666666666, "claude_cost_usd": 0.05807333333333333, "fm_tokens": 0, "fm_calls": 0, "seconds": 6.1, "escalated": [], "errors": 0, "model": "claude-sonnet-5-5"}, {"task": "logs", "size": "medium", "route": "fm", "reps": 3, "score": 0.6666666666666666, "score_sd": 0.0, "claude_tokens": 0, "claude_in": 0, "claude_out": 0, "claude_cost_usd": 0, "fm_tokens": 41267, "fm_calls": 22, "seconds": 89.96666666666667, "escalated": [], "errors": 0, "model": ""}, {"task": "logs", "size": "medium", "route": "tandem", "reps": 3, "score": 0.6666666666666666, "score_sd": 0.0, "claude_tokens": 3781, "claude_in": 3133, "claude_out": 648, "claude_cost_usd": 0.01087, "fm_tokens": 41267, "fm_calls": 22, "seconds": 95.73333333333333, "escalated": ["62 of 1000 lines", "62 of 1000 lines", "62 of 1000 lines"], "errors": 0, "model": "claude-sonnet-5-5"}, {"task": "logs", "size": "large", "route": "claude", "reps": 3, "score": 1.0, "score_sd": 0.0, "claude_tokens": 108302.33333333333, "claude_in": 104914, "claude_out": 3388.3333333333335, "claude_cost_usd": 0.18076666666666666, "fm_tokens": 0, "fm_calls": 0, "seconds": 18.166666666666664, "escalated": [], "errors": 0, "model": "claude-sonnet-5-5"}, {"task": "logs", "size": "large", "route": "fm", "reps": 3, "score": 0.5714285714285714, "score_sd": 0.0, "claude_tokens": 0, "claude_in": 0, "claude_out": 0, "claude_cost_usd": 0, "fm_tokens": 124051, "fm_calls": 64, "seconds": 277.1666666666667, "escalated": [], "errors": 0, "model": ""}, {"task": "logs", "size": "large", "route": "tandem", "reps": 3, "score": 0.47619047619047616, "score_sd": 0.0, "claude_tokens": 11096, "claude_in": 8414, "claude_out": 2682, "claude_cost_usd": 0.03860333333333333, "fm_tokens": 124051, "fm_calls": 64, "seconds": 293.3333333333333, "escalated": ["195 of 3000 lines", "195 of 3000 lines", "195 of 3000 lines"], "errors": 0, "model": "claude-sonnet-5-5"}], "compare": [{"task": "classify", "size": "small", "claude_tokens_saved_pct": 100.0, "cost_saved_pct": 100.0, "score_change_pts": -16.666666666666664, "slower_by_s": 2.4000000000000004}, {"task": "classify", "size": "medium", "claude_tokens_saved_pct": 42.82380396732789, "cost_saved_pct": 54.71167369901546, "score_change_pts": -7.499999999999996, "slower_by_s": 12.733333333333333}, {"task": "classify", "size": "large", "claude_tokens_saved_pct": 67.90478681663615, "cost_saved_pct": 80.71861016056857, "score_change_pts": -7.499999999999996, "slower_by_s": 27.3}, {"task": "extract", "size": "small", "claude_tokens_saved_pct": 100.0, "cost_saved_pct": 100.0, "score_change_pts": 0.0, "slower_by_s": 2.666666666666667}, {"task": "extract", "size": "medium", "claude_tokens_saved_pct": 77.74607703281026, "cost_saved_pct": 90.14526246285904, "score_change_pts": 0.0, "slower_by_s": 21.133333333333333}, {"task": "extract", "size": "large", "claude_tokens_saved_pct": 84.59443300338802, "cost_saved_pct": 90.66855051056451, "score_change_pts": -0.5000000000000004, "slower_by_s": 53.43333333333334}, {"task": "logs", "size": "small", "claude_tokens_saved_pct": 78.4063617441426, "cost_saved_pct": 20.48458149779735, "score_change_pts": -22.22222222222222, "slower_by_s": 15.266666666666667}, {"task": "logs", "size": "medium", "claude_tokens_saved_pct": 89.55313231041279, "cost_saved_pct": 81.28228676386178, "score_change_pts": -33.333333333333336, "slower_by_s": 89.63333333333334}, {"task": "logs", "size": "large", "claude_tokens_saved_pct": 89.75460670284112, "cost_saved_pct": 78.64466162640605, "score_change_pts": -52.38095238095239, "slower_by_s": 275.16666666666663}]};
+const pct = v => Math.round(v * 100) + "%";
+const n = v => Math.round(v).toLocaleString("en-US");
+const pill = s => {
+  const c = s >= 0.98 ? "tag on" : s >= 0.85 ? "tag ink" : "tag";
+  return `<span class="${c}">${pct(s)}</span>`;
+};
+const delta = p => {
+  const r = Math.round(p);
+  const c = r >= 0 ? "tag ink" : r > -10 ? "tag ink" : "tag";
+  return `<span class="${c}">${r > 0 ? "+" : r < 0 ? "−" : "±"}${Math.abs(r)} pts</span>`;
+};
+const label = { classify: "Classify", extract: "Extract", logs: "Logs" };
+const esc = {};
+DATA.cells.forEach(c => { if (c.route === "tandem") esc[c.task + c.size] = c.escalated[0] || ""; });
+
+document.getElementById("compare").innerHTML = DATA.compare.map(c => `
+  <tr>
+    <td><b>${label[c.task]}</b></td><td>${c.size}</td>
+    <td class="r">${Math.round(c.claude_tokens_saved_pct)}%</td>
+    <td class="r">${Math.round(c.cost_saved_pct)}%</td>
+    <td class="r">${delta(c.score_change_pts)}</td>
+    <td class="r">+${Math.round(c.slower_by_s)} s</td>
+    <td>${esc[c.task + c.size]}</td>
+  </tr>`).join("");
+
+document.getElementById("cells-body").innerHTML = DATA.cells.map(c => `
+  <tr class="${c.route === "claude" ? "top" : ""}">
+    <td><b>${c.route === "claude" ? label[c.task] : ""}</b></td>
+    <td>${c.route === "claude" ? c.size : ""}</td>
+    <td>${c.route}</td>
+    <td class="r">${pill(c.score)}</td>
+    <td class="r">${c.claude_tokens ? n(c.claude_tokens) : "–"}</td>
+    <td class="r">${c.claude_cost_usd ? "$" + c.claude_cost_usd.toFixed(4) : "–"}</td>
+    <td class="r">${c.fm_tokens ? n(c.fm_tokens) : "–"}</td>
+    <td class="r">${c.fm_calls || "–"}</td>
+    <td class="r">${Math.round(c.seconds)}</td>
+  </tr>`).join("");
+
+</script>
+</body>
+</html>
